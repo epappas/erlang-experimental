@@ -78,7 +78,7 @@ init([]) ->
   {stop, Reason :: term(), Reply :: term(), NewState :: #state{}} |
   {stop, Reason :: term(), NewState :: #state{}}).
 handle_call(_Request, _From, State) ->
-  {reply, ok, State}.
+  {reply, httpc:request("http://google.com"), State}.
 
 %%--------------------------------------------------------------------
 %% @private
