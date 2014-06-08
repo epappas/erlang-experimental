@@ -23,8 +23,12 @@ start_child() ->
 %%%===================================================================
 
 init([{LSock, Hostname}]) ->
-  SupervisorSpec = {simple_one_for_one, 0, 1},
-  ChildSpec = {smtp_server, {smtp_server, start_link, [{LSock, Hostname}]},
-    temporary, brutal_kill, worker, [smtp_server]},
-  {ok, {SupervisorSpec, [ChildSpec]}}.
+  {ok, {{simple_one_for_one, 0, 1},
+    [{smtp_server,
+      {smtp_server, start_link, [{LSock, Hostname}]},
+      temporary,
+      brutal_kill,
+      worker,
+      [smtp_server]}
+    ]}}.
   

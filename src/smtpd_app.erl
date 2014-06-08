@@ -15,9 +15,7 @@ start(_Type, _StartArgs) ->
            {ok, P} -> P;
            undefined -> ?DEFAULT_PORT
          end,
-  % TODO: binary, {reuseaddr, true}, {keepalive, true}, {backlog, 30}
   {ok, LSock} = gen_tcp:listen(Port, [{active, true}, {packet, line}, {reuseaddr, true}]),
-  % TODO: check for {error, Reason} return
 
   {ok, Hostname} = inet:gethostname(),
 
