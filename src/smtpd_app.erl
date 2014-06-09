@@ -10,6 +10,7 @@ start() ->
   start({}, {}).
 
 start(_Type, _StartArgs) ->
+  logger:start(),
   % open listen socket here, avoiding adding code to supervisors
   Port = case application:get_env(tcp_interface, port) of
            {ok, P} -> P;

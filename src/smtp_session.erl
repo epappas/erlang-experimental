@@ -20,19 +20,15 @@ data_line(#session{mode = command} = Session, Data) ->
   Command = string:to_upper(string:substr(Data, 1, 4)),
   case Command of
     "HELO" ->
-      io:format(Data),
       send(Session, reply(250, Session#session.hostname)),
       {ok, Session};
     "EHLO" ->
-      io:format(Data),
       send(Session, reply(250, Session#session.hostname)),
       {ok, Session};
     "MAIL" ->
-      io:format(Data),
       send(Session, reply(250, "OK")),
       {ok, Session};
     "RCPT" ->
-      io:format(Data),
       send(Session, reply(250, "OK")),
       {ok, Session};
     "DATA" ->
@@ -52,7 +48,6 @@ data_line(#session{mode = data} = Session, Data) ->
       send(Session, reply(250, "OK")),
       {ok, Session#session{mode = command}};
     _ ->
-      io:format(Data),
       {ok, Session}
   end.
 

@@ -29,7 +29,7 @@
 
 start() ->
   {ok, Pid} = gen_server:start_link({global, ?SERVER}, ?MODULE, [], []),
-  true = register(?MODULE, Pid),
+  register(?MODULE, Pid),
   {ok, Pid}.
 
 stop() -> gen_server:call(?MODULE, stop).
@@ -45,7 +45,13 @@ log(_Level, _MSG) -> gen_server:call(?SERVER, {_Level, _MSG}).
 init([]) -> {ok, ets:new(log_table, [named_table])}.
 
 handle_call(_Request, _From, State) ->
-  io:format("~p ~p ~p", [_Request, _From, State]),
+  case _Request of
+    {warn, MSG} -> io:format("WARN [~p] from ~p : ~p ~n", [erlang:now(), _From, MSG]);
+    {info, MSG} -> io:format("INFO [~p] from ~p : ~p ~n", [erlang:now(), _From, MSG]);
+    {debug, MSG} -> io:format("DEBUG [~p] from ~p : ~p ~n", [erlang:now(), _From, MSG]);
+    {trace, MSG} -> io:format("TRACE [~p] from ~p : ~p ~n", [erlang:now(), _From, MSG]);
+    {LEVEL, MSG} -> io:format("~p [~p] from ~p : ~p ~n", [LEVEL, erlang:now(), _From, MSG])
+  end,
   {reply, ok, State}.
 
 handle_cast(_Request, State) -> {noreply, State}.

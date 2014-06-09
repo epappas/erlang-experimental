@@ -28,16 +28,14 @@ init([{LSock, Hostname}]) ->
 
 handle_call(Request, _From, State) ->
   Reply = {ok, Request},
-  io:format("~n Handle call ~p", [Reply]),
   {reply, Reply, State}.
 
 handle_cast(stop, State) ->
-  io:format("~n Handle cast ~p", [State]),
   {stop, normal, State}.
 
 %% data received on socket
 handle_info({tcp, _Socket, Data}, #state{session = Session} = State) ->
-  io:format("~n Handle info tcp ~p", [State]),
+  logger:log(trace, {tcp, {socket, _Socket}, {data, Data}}),
   case smtp_session:data_line(Session, Data) of
     {ok, NewSession} ->
       {noreply, State#state{session = NewSession}};
@@ -47,14 +45,13 @@ handle_info({tcp, _Socket, Data}, #state{session = Session} = State) ->
 
 %% socket closed by peer  
 handle_info({tcp_closed, _Socket}, State) ->
-  io:format("~n Handle info tcpclose ~p", [State]),
   {stop, normal, State};
 
 handle_info(timeout, #state{lsock = LSock, hostname = Hostname} = State) ->
-  io:format("~n Handle info timeout ~p", [State]),
   % wait for connection
   {ok, Socket} = gen_tcp:accept(LSock),
   {ok, Session} = smtp_session:connect(Socket, Hostname),
+  logger:log(trace, {connected, {session, Session}}),
   % start new acceptor process
   smtpd_sup:start_child(),
   {noreply, State#state{session = Session}};
